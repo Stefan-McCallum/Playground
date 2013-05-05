@@ -44,6 +44,18 @@
     <Reference Include="SecretLabs.NETMF.Hardware" />
     <Reference Include="SecretLabs.NETMF.Hardware.NetduinoPlus" />
     <Reference Include="System" />
+    <Reference Include="Toolbox.NETMF.Core">
+      <HintPath>..\Resources\Toolbox.NETMF.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Toolbox.NETMF.Hardware.Core">
+      <HintPath>..\Resources\Toolbox.NETMF.Hardware.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Toolbox.NETMF.Hardware.WiFlyGSX">
+      <HintPath>..\Resources\Toolbox.NETMF.Hardware.WiFlyGSX.dll</HintPath>
+    </Reference>
+    <Reference Include="Toolbox.NETMF.NET.Core">
+      <HintPath>..\Resources\Toolbox.NETMF.NET.Core.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NetDuinoUtils\Onoffswitch.NetDuinoUtils.csproj">
