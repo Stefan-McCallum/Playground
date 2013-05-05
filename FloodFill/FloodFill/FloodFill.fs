@@ -1,62 +1,7 @@
 ﻿module FloodFill
 
 open FloodFillTypes
-
-(* 
-    Helper methods to move the position around
-*)
-                                          
-let private moveRight position = 
-    let (x,y) = position
-    (x + 1, y)
-
-let private moveLeft position = 
-    let (x,y) = position
-    (x - 1, y)
-
-let private moveUp position = 
-    let (x,y) = position
-    (x, y + 1)
-
-let moveDown position = 
-    let (x,y) = position
-    (x, y - 1)
-
-(*
-    Size helpers
-*)
-
-let private xSize board = Array2D.length1 board
-
-let private ySize board = Array2D.length2 board
-
-let private offBoard position board = 
-    let (x,y) = position
-    x < 0 || y < 0 || x >= (xSize board) || y >= (ySize board)
-
-(*
-    Alias to push elements onto a list
-*)
-
-let private markPosition position previousSpots = position::previousSpots
-
-(*
-    Determines if the position on the board equals the target
-*)
-
-let private positionOnTarget position board target = 
-    if offBoard position board then 
-        false
-    else
-        let (x, y) = position
-        (Array2D.get board x y) = target
-
-(*
-    Alias to find if we already processed a position
-*)
-
-let private positionExists position list = 
-    List.exists(fun pos -> pos = position) list
+open Positions
 
 (* 
    Iterate over each element in a 2d array, passing the x and y
@@ -65,13 +10,12 @@ let private positionExists position list =
    and the function returns a new list
 *)
 
-let private forEachElement (applier:(X -> Y -> Board<'a> -> 'b)) (twoDimArray:Board<'a>) =
+let private forEachElement (applier:(X -> Y -> IBoard<'a> -> 'b)) (twoDimArray:IBoard<'a>) =
     let mutable items = [] 
-    for x in 0..(xSize twoDimArray)-1 do
-        for y in 0..(ySize twoDimArray)-1 do            
+    for x in 0..(twoDimArray.xSize) do
+        for y in 0..(twoDimArray.ySize) do            
             items <- (applier x y twoDimArray)::items
     items
-
 
 (*
     Looks for a specified contigoius block
@@ -79,35 +23,11 @@ let private forEachElement (applier:(X -> Y -> Board<'a> -> 'b)) (twoDimArray:Bo
     reference cell of a list of positions (supplied by the caller)
 *)
 
-let private elemAt board (x, y) = Array2D.get board x y
 
-(*    
-let displayPosition board position = 
-    //System.Threading.Thread.Sleep(500)
-    
-    Console.Clear()    
-
-    for x in 0..(xSize board)-1 do
-        Console.WriteLine()
-
-        for y in 0..(ySize board)-1 do                                
-            let elem = ViewType (elemAt board (x, y))
-
-            let (x1, y1) = position
-
-            if (x,y) = position then
-                Console.Write("x")
-            else
-                Console.Write elem
-        
-            Console.Write "    "
-        
- *)  
-
-let private findMassStartingAt (position:Position) (board:Board<'A>) (target:'A) (positionSeed:ProcessedPositions) : MassFinder = 
+let private findMassStartingAt (position:Position) (canvas:IBoard<'A>) (target:'A) (positionSeed:ProcessedPositions) : MassFinder = 
     let rec findMassStartingAt' position (currentMass:ContiguousPoints, processedList:ProcessedPositions) cont = 
             // if you move off the board return
-        if offBoard position board then
+        if offBoard position canvas then
             cont (currentMass, processedList)
 
         // if you already processed this position then don't do anything
@@ -121,7 +41,7 @@ let private findMassStartingAt (position:Position) (board:Board<'A>) (target:'A)
             let left = moveLeft position
             let right = moveRight position
             
-            let found = positionOnTarget position board target   
+            let found = positionOnTarget position canvas target   
 
             let updatedProcess = position::processedList
 
@@ -142,41 +62,36 @@ let private findMassStartingAt (position:Position) (board:Board<'A>) (target:'A)
     findMassStartingAt' position ([], positionSeed) id
 
 (*
-    Finds all items of list2 that are not in list1
-*)
-
-let private except list1 list2 = 
-    let listContainsElement item = List.exists (fun i -> i = item) list1
-    List.filter(fun item -> not (listContainsElement item)) list2
-
-(*
     Find first non processed position
 *)
 
-let private firstNonProcessedPosition processedList xCount yCount = 
+let private firstNonProcessedPosition processedList (canvas:IBoard<'T>) = 
     match processedList with
         | [] -> 
             Some((0, 0))
         | _ ->
-            if List.length processedList = (xCount * yCount) then
+            if List.length processedList = (canvas.xSize * canvas.ySize) then
                 None 
             else
+                let rec nonProcessed' (x, y) cont = 
+                    if offBoard (x,y) canvas then 
+                        cont(None)
+                    else
+                        if not (List.exists(fun pos -> pos = (x,y)) processedList) then
+                            cont (Some((x,y)))
+                        else
+                            nonProcessed' (x + 1, y) (fun found1 -> 
+                                if Option.isSome found1 then
+                                    found1
+                                else
+                                    nonProcessed' (x, y + 1) (fun found2 ->
+                                        cont(found2)))
 
-                // get an array representing (x, y) tuples of the entire board
-                let totalPositions = [0..xCount] |> List.collect (fun x -> [0..yCount] |> List.map (fun y -> (x, y)))
+                let minX = List.minBy(fst) processedList
+                let minY = List.minBy(snd) processedList
 
-                // set intersections from the total positions array and the entire board
-                let intersections = Set.intersect (Set.ofList totalPositions) (Set.ofList processedList)
-                                        |> List.ofSeq
-
-                // exclude the intersections from the total list
-                let excludes = except intersections totalPositions
-
-                match excludes with 
-                    | [] -> None
-                    | _ -> Some(List.head excludes)
-
-                        
+                nonProcessed' (fst minX, snd minY) id                     
+                                            
 
 (*
     Finds all contiguous blocks of the specified type
@@ -184,11 +99,8 @@ let private firstNonProcessedPosition processedList xCount yCount =
     block)
 *)
     
-let getContiguousBlocks board target = 
-    
-    let xCount = (xSize board) - 1
-    let yCount = (ySize board) - 1
-
+let getContiguousBlocks (board:IBoard<'T>) target = 
+        
     let rec findBlocks' (blocks, processed:PositionList) = 
         
         let findMass x y board = findMassStartingAt (x, y) board target processed
@@ -197,7 +109,7 @@ let getContiguousBlocks board target =
         // and try and find its contigoius area
         // if it isn't a valid area the block it returns will be
         // empty and we can exclude it
-        match firstNonProcessedPosition processed xCount yCount with 
+        match firstNonProcessedPosition processed board with 
             | None -> blocks
             | Some (x, y) -> 
                 let (block, processed) = findMass x y board
@@ -214,9 +126,9 @@ let getContiguousBlocks board target =
     of the type that the point was at. 
 *)
 
-let floodFillArea (point:Position) (canvas:Board<'T>) =
+let floodFillArea (point:Position) (canvas:IBoard<'T>) =
     let (x, y) = point
-    let itemAtPoint = Array2D.get canvas x y
+    let itemAtPoint = Array2D.get canvas.board x y
     
     findMassStartingAt point canvas itemAtPoint [] |> fst
 

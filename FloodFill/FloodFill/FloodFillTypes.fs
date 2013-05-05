@@ -22,5 +22,7 @@ type Earth =
     | Water
 
 type IBoard<'T> = 
-    abstract board : Board<'T>
-    abstract searchMoves : Position list
+    abstract board : Board<'T>    
+    abstract xSize : int
+    abstract ySize : int
+    abstract allPositions : PositionList
