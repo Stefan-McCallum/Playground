@@ -43,7 +43,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FloodFillTypes.fs" />
-    <Compile Include="ListUtils.fs" />
     <Compile Include="Positions.fs" />
     <Compile Include="FloodFill.fs" />
     <Compile Include="Program.fs" />
