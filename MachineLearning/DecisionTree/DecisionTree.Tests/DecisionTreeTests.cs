@@ -48,6 +48,46 @@ namespace DecisionTree.Tests
             tree.DisplayTree();
         }
 
+        [Test]
+        public void DecideOnTree()
+        {
+            var tree = GetDataSet().BuildTree();
+
+            var instance = new Instance
+                           {                               
+                               Features = new List<Feature>
+                                          {
+                                              new Feature("1", CAN_SURVIVE_WITHOUT_SURFACING),
+                                              new Feature("1", HAS_FLIPPERS)
+                                          }
+                           };
+
+            var output = Tree.ProcessInstance(tree, instance);
+
+            Assert.That(output.Axis, Is.EqualTo(IS_FISH));
+            Assert.That(output.Value, Is.EqualTo("yes"));
+        }
+
+        [Test]
+        public void DecideOnTreeNoFish()
+        {
+            var tree = GetDataSet().BuildTree();
+
+            var instance = new Instance
+            {
+                Features = new List<Feature>
+                                          {
+                                              new Feature("0", CAN_SURVIVE_WITHOUT_SURFACING),
+                                              new Feature("1", HAS_FLIPPERS)
+                                          }
+            };
+
+            var output = Tree.ProcessInstance(tree, instance);
+
+            Assert.That(output.Axis, Is.EqualTo(IS_FISH));
+            Assert.That(output.Value, Is.EqualTo("no"));
+        }
+
         private DataSet GetDataSet()
         {
 

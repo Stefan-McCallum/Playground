@@ -80,8 +80,7 @@ namespace DecisionTree.Data
             }
 
             return new Tree
-                   {
-                       Axis = axis,
+                   {                       
                        Branches = branches
                    };
         }

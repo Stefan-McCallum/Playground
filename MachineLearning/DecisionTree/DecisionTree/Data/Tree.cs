@@ -8,20 +8,18 @@ namespace DecisionTree.Data
 {
     public class Tree
     {
-        public String Axis { get; set; }
-
         public Output Leaf { get; set; }
 
         public Dictionary<Feature, Tree> Branches { get; set; }
 
         public void DisplayTree(int tab = 0)
         {
-            Action tabWriter = () => Enumerable.Range(0, tab).ForEach(i => Console.Write("\t"));                
-            
+            Action tabWriter = () => Enumerable.Range(0, tab).ForEach(i => Console.Write("\t"));
+
             if (Branches != null)
             {
                 foreach (var feature in Branches)
-                {                    
+                {
                     tabWriter();
 
                     Console.WriteLine(feature.Key);
@@ -31,34 +29,38 @@ namespace DecisionTree.Data
             }
             else
             {
-                tabWriter();                
+                tabWriter();
                 Console.WriteLine(Leaf);
             }
         }
 
-        public Output ProcessInstance(Instance i)
+        public static Output ProcessInstance(Tree tree, Instance i)
         {
-            return null;
+            if (tree.Leaf != null)
+            {
+                return tree.Leaf;
+            }
+
+            return ProcessInstance(tree.TreeForInstance(i), i);            
         }
 
         private Tree TreeForFeature(Feature feature)
         {
-            var branch = Branches.FirstOrDefault(i => i.Key.Axis == feature.Axis);
+            var branch = Branches.FirstOrDefault(i => i.Key.Axis == feature.Axis && i.Key.Value == feature.Value);
 
-            return branch.Value;            
+            if (branch.Equals(default(KeyValuePair<Feature, Tree>)))
+            {
+                return null;
+            }
+
+            return branch.Value;
         }
 
         private Tree TreeForInstance(Instance instance)
         {
-            foreach (var item in Branches.Keys)
-            {
-                if (instance.Features.Any(feature => item.Axis == feature.Axis))
-                {
-                    return Branches[item];
-                }
-            }
+            var tree = instance.Features.Select(TreeForFeature).FirstOrDefault(f => f != null);
 
-            return null;
+            return tree;
         }
     }
 }
