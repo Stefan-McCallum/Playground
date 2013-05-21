@@ -13,12 +13,12 @@ namespace DecisionTree
         {
             var baseEntropy = Entropy(set);
 
-            var bestInfoGain = 0.0;
+            var bestInfoGain = 0.0;            
 
-            string bestAxisSplit = null;
+            var uniqueFeaturesByAxis = set.UniqueFeatures().GroupBy(i => i.Axis).ToList();
 
-            var uniqueFeaturesByAxis = set.UniqueFeatures().GroupBy(i => i.Axis);
-            
+            string bestAxisSplit = uniqueFeaturesByAxis.First().Key;
+
             foreach (var axis in uniqueFeaturesByAxis)
             {                
                 // calculate the total entropy based on splitting by this axis. The total entropy
@@ -43,7 +43,7 @@ namespace DecisionTree
         {
             return (from possibleValue in allPossibleAxisValues 
                     select set.Split(possibleValue) into subset 
-                    let prob = (float) subset.NumberOfFeatures/set.NumberOfFeatures 
+                    let prob = (float) subset.NumberOfInstances/set.NumberOfInstances 
                     select prob*Entropy(subset)).Sum();
         }
 

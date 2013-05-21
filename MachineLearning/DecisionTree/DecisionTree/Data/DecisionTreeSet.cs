@@ -23,6 +23,11 @@ namespace DecisionTree.Data
             }
         }
 
+        public int NumberOfInstances
+        {
+            get { return Instances.Count(); }
+        }
+
         public Boolean InstancesAreSameClass
         {
             get
