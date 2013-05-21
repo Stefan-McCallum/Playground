@@ -52,6 +52,10 @@
       <Project>{3BA479BE-304F-436F-A59F-3B266B55AE68}</Project>
       <Name>DecisionTree</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SampleDataParsers\SampleDataParsers.csproj">
+      <Project>{554D6CAA-D7DC-4DC5-9A18-88B3A57F8D61}</Project>
+      <Name>SampleDataParsers</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

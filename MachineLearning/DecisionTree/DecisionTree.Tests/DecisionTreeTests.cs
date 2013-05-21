@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using DecisionTree.Data;
 using NUnit.Framework;
+using SampleDataParsers;
 
 namespace DecisionTree.Tests
 {
@@ -88,7 +89,23 @@ namespace DecisionTree.Tests
             Assert.That(output.Value, Is.EqualTo("no"));
         }
 
-        private DataSet GetDataSet()
+        [Test]
+        public void TestLenses()
+        {
+            var file = @"C:\Projects\Personal2\Playground\MachineLearning\DecisionTree\Assets\Lenses\lenses.data";
+            var set = new Lenses().Parse(file);
+
+            var tree = set.BuildTree();
+
+            tree.DisplayTree();
+
+            foreach (var instance in set.Instances)
+            {
+                Assert.That(Tree.ProcessInstance(tree, instance).Value, Is.EqualTo(instance.Output.Value));
+            }
+        }
+
+        private DecisionTreeSet GetDataSet()
         {
 
             #region data
@@ -145,7 +162,7 @@ namespace DecisionTree.Tests
 
             #endregion
 
-            return new DataSet
+            return new DecisionTreeSet
             {
                 Instances = new List<Instance>
                                           {

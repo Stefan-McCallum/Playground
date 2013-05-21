@@ -41,7 +41,7 @@ namespace DecisionTree.Data
                 return tree.Leaf;
             }
 
-            return ProcessInstance(tree.TreeForInstance(i), i);            
+            return ProcessInstance(tree.TreeForInstance(i), i);
         }
 
         private Tree TreeForFeature(Feature feature)

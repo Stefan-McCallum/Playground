@@ -6,7 +6,7 @@ using MoreLinq;
 
 namespace DecisionTree.Data
 {
-    public class DataSet
+    public class DecisionTreeSet
     {
         public List<Instance> Instances { get; set; } 
 
@@ -27,18 +27,18 @@ namespace DecisionTree.Data
         {
             get
             {
-                return Instances.SelectMany(i => i.Features).DistinctBy(i => i.Axis).Count() == 1;
+                return Instances.Select(i => i.Output).DistinctBy(i => i.Value).Count() == 1;
             }
         }
 
-        public DataSet Split(Feature feature)
+        public DecisionTreeSet Split(Feature feature)
         {
             return Split(feature.Axis, feature.Value);
         }
 
-        public DataSet Split(string axis, string value)
+        public DecisionTreeSet Split(string axis, string value)
         {            
-            return new DataSet
+            return new DecisionTreeSet
                    {
                        Instances = Instances.Select(i => i.Split(axis, value))
                                             .Where(i => i.Features.Any())
@@ -48,7 +48,7 @@ namespace DecisionTree.Data
 
         public Tree BuildTree()
         {
-            if (InstancesAreSameClass || Instances.Count() == 1)
+            if (InstancesAreSameClass || Instances.All(f => f.Features.Count() == 1))
             {
                 return LeafTreeForRemainingFeatures();
             }
@@ -87,32 +87,59 @@ namespace DecisionTree.Data
 
         private Tree LeafTreeForRemainingFeatures()
         {
-            if (Instances.Count() > 1)
+            if (InstancesAreSameClass)
             {
-                var groupings = Instances.DistinctBy(i => i.Output.Value)
-                                         .ToDictionary(i => i.Features.First(), j => new Tree
-                                                                                     {
-                                                                                         Leaf = j.Output
-                                                                                     });
-
-                if (groupings.Count() > 1)
-                {
-                    return new Tree
-                           {
-                               Branches = groupings
-                           };
-                }
-
-                return new Tree
-                       {
-                           Leaf = groupings.First().Value.Leaf
-                       };
+                return GroupByClass();
             }
-            
+
+            if (Instances.All(f => f.Features.Count() == 1))
+            {
+                return LeafForEachFeature();
+            }
+
+            return null;
+        }
+
+        private Tree LeafForEachFeature()
+        {
+            // each feature is the last item
+            var branches = new Dictionary<Feature, Tree>();
+            foreach (var instance in Instances)
+            {
+                foreach (var feature in instance.Features)
+                {
+                    branches[feature] = new Tree
+                    {
+                        Leaf = instance.Output
+                    };
+                }
+            }
             return new Tree
-                   {
-                       Leaf = Instances.First().Output
-                   };
+            {
+                Branches = branches
+            };
+        }
+
+        private Tree GroupByClass()
+        {
+            var groupings = Instances.DistinctBy(i => i.Output.Value)
+                                         .ToDictionary(i => i.Features.First(), j => new Tree
+                                         {
+                                             Leaf = j.Output
+                                         });
+
+            if (groupings.Count() > 1)
+            {
+                return new Tree
+                {
+                    Branches = groupings
+                };
+            }
+
+            return new Tree
+            {
+                Leaf = groupings.First().Value.Leaf
+            };
         }
 
         public IEnumerable<Feature> UniqueFeatures()

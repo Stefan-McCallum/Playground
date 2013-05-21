@@ -8,7 +8,8 @@ namespace DecisionTree
 {
     public static class Decider
     {
-        public static string SelectBestAxis(DataSet set)
+
+        public static string SelectBestAxis(DecisionTreeSet set)
         {
             var baseEntropy = Entropy(set);
 
@@ -38,7 +39,7 @@ namespace DecisionTree
             return bestAxisSplit;
         }        
 
-        private static double EntropyForSplitBranches(DataSet set, IEnumerable<Feature> allPossibleAxisValues)
+        private static double EntropyForSplitBranches(DecisionTreeSet set, IEnumerable<Feature> allPossibleAxisValues)
         {
             return (from possibleValue in allPossibleAxisValues 
                     select set.Split(possibleValue) into subset 
@@ -46,7 +47,7 @@ namespace DecisionTree
                     select prob*Entropy(subset)).Sum();
         }
 
-        public static double Entropy(DataSet set)
+        public static double Entropy(DecisionTreeSet set)
         {
             var total = set.Instances.Count();
 
