@@ -92,7 +92,7 @@ namespace DecisionTree.Tests
         [Test]
         public void TestLenses()
         {
-            var file = @"C:\Projects\Personal2\Playground\MachineLearning\DecisionTree\Assets\Lenses\lenses.data";
+            var file = @"..\..\..\Assets\Lenses\lenses.data";
             var set = new Lenses().Parse(file);
 
             var tree = set.BuildTree();
