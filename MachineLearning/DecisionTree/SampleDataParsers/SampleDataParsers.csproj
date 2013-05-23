@@ -40,8 +40,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Car\Car.cs" />
+    <Compile Include="CsvRunner.cs" />
     <Compile Include="IParser.cs" />
-    <Compile Include="Lenses.cs" />
+    <Compile Include="Lenses\Lenses.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

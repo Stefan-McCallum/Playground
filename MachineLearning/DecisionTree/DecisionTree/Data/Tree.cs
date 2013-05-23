@@ -1,15 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using MoreLinq;
 
 namespace DecisionTree.Data
 {
+    [Serializable]
+    [DataContract]
     public class Tree
     {
+        [DataMember]
         public Output Leaf { get; set; }
 
+        [DataMember]
         public Dictionary<Feature, Tree> Branches { get; set; }
 
         public void DisplayTree(int tab = 0)

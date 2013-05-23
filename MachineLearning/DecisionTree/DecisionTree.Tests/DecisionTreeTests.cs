@@ -5,6 +5,8 @@ using System.Text;
 using DecisionTree.Data;
 using NUnit.Framework;
 using SampleDataParsers;
+using SampleDataParsers.Car;
+using SampleDataParsers.Lenses;
 
 namespace DecisionTree.Tests
 {
@@ -94,6 +96,22 @@ namespace DecisionTree.Tests
         {
             var file = @"..\..\..\Assets\Lenses\lenses.data";
             var set = new Lenses().Parse(file);
+
+            var tree = set.BuildTree();
+
+            tree.DisplayTree();
+
+            foreach (var instance in set.Instances)
+            {
+                Assert.That(Tree.ProcessInstance(tree, instance).Value, Is.EqualTo(instance.Output.Value));
+            }
+        }
+
+        [Test]
+        public void TestCar()
+        {
+            var file = @"..\..\..\Assets\CarEvaluation\car.data";
+            var set = new Car().Parse(file);
 
             var tree = set.BuildTree();
 

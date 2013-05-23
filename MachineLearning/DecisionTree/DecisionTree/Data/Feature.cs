@@ -5,6 +5,7 @@ using System.Text;
 
 namespace DecisionTree.Data
 {
+    [Serializable]
     public class Feature
     {
         public string Value { get; set; }

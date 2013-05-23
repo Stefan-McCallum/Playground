@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
-using System.Linq;
-using System.Text;
 using DecisionTree.Data;
 
-namespace SampleDataParsers
+namespace SampleDataParsers.Lenses
 {
     public enum PatientAge
     {
@@ -40,27 +37,9 @@ namespace SampleDataParsers
         None = 3
     }
 
-    public class Lenses : IParser
-    {
-        public DecisionTreeSet Parse(string file)
-        {
-            var set = new DecisionTreeSet();
-
-            set.Instances = new List<Instance>();
-
-            using (var stream = new StreamReader(file))
-            {
-                while (!stream.EndOfStream)
-                {
-                    var line = stream.ReadLine();
-                    set.Instances.Add(ParseLine(line));
-                }
-            }
-
-            return set;
-        }
-
-        private Instance ParseLine(string line)
+    public class Lenses : CsvRunner
+    {        
+        protected override Instance ParseLine(string line)
         {
             var splits = line.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
 
