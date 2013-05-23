@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoNulls", "NoNulls\NoNulls.csproj", "{ECFDA152-9B45-4057-86DE-D83D5D35FD31}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpressionTrees", "ExpressionTrees\ExpressionTrees.csproj", "{6E0C0B8E-5E16-4CFE-B937-C732D3B9B817}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -13,6 +15,10 @@ Global
 		{ECFDA152-9B45-4057-86DE-D83D5D35FD31}.Debug|x86.Build.0 = Debug|x86
 		{ECFDA152-9B45-4057-86DE-D83D5D35FD31}.Release|x86.ActiveCfg = Release|x86
 		{ECFDA152-9B45-4057-86DE-D83D5D35FD31}.Release|x86.Build.0 = Release|x86
+		{6E0C0B8E-5E16-4CFE-B937-C732D3B9B817}.Debug|x86.ActiveCfg = Debug|x86
+		{6E0C0B8E-5E16-4CFE-B937-C732D3B9B817}.Debug|x86.Build.0 = Debug|x86
+		{6E0C0B8E-5E16-4CFE-B937-C732D3B9B817}.Release|x86.ActiveCfg = Release|x86
+		{6E0C0B8E-5E16-4CFE-B937-C732D3B9B817}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

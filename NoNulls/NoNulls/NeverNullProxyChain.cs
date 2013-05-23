@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using Castle.Components.DictionaryAdapter;
 using Castle.DynamicProxy;
 
 namespace NoNulls
@@ -75,8 +78,22 @@ namespace NoNulls
 
     #region Interceptor
 
+    public enum CastType
+    {
+        List,
+        Dictionary,
+        Default
+    }
+
     public class NeverNullInterceptor : IInterceptor
     {
+        private static readonly MethodInfo ProxyGenericIteratorMethod =
+            typeof(NeverNullInterceptor)
+                .GetMethod(
+                    "ProxyGenericIterator",
+                    BindingFlags.NonPublic | BindingFlags.Static);
+ 
+
         private object Source { get; set; }
 
         public NeverNullInterceptor(object source)
@@ -84,32 +101,112 @@ namespace NoNulls
             Source = source;
         }
 
-        public void Intercept(IInvocation invocation)
+        private bool IsGenericType(Type source, Type target)
         {
             try
             {
-                if (invocation.Method.DeclaringType == typeof(IUnBoxProxy))
+                if (!target.IsGenericType)
                 {
-                    invocation.ReturnValue = Source;
-                    return;
+                    return false;
                 }
 
-                invocation.Proceed();
+                return source.GetInterfaces().Any(t => t.GetGenericTypeDefinition() == target);               
+            }
+            catch
+            {
+            }
 
-                var d = Convert.ChangeType(invocation.ReturnValue, invocation.Method.ReturnType);
+            return false;
+        }
+
+        public void Intercept(IInvocation invocation)
+        {            
+            if (invocation.Method.DeclaringType == typeof (IUnBoxProxy))
+            {
+                invocation.ReturnValue = Source;
+                return;
+            }
+
+            var returnType = invocation.Method.ReturnType;
+
+            if (invocation.Method.ReturnType.IsSubclassOf(typeof (IEnumerable)))
+            {
+                HandleNonGenericIteratorInvocation(invocation);
+            }
+            else if (returnType.IsGenericType && returnType.GetGenericTypeDefinition() == typeof (IEnumerable<>))
+            {
+                HandleGenericIteratorInvocation(invocation, CastType.Default);
+            }
+            else if (IsGenericType(returnType, typeof (IList<>)))
+            {
+                HandleGenericIteratorInvocation(invocation, CastType.List);
+            }
+            else
+            {
+                invocation.Proceed();
+                
+                var returnValue = Convert.ChangeType(invocation.ReturnValue, invocation.Method.ReturnType);
 
                 if (!PrimitiveTypes.Test(invocation.Method.ReturnType))
                 {
-                    invocation.ReturnValue = invocation.ReturnValue == null
+                    invocation.ReturnValue = returnValue == null
                                                  ? ProxyExtensions.NeverNullProxy(invocation.Method.ReturnType)
-                                                 : ProxyExtensions.NeverNull(d, invocation.Method.ReturnType);
+                                                 : ProxyExtensions.NeverNull(returnValue,
+                                                                             invocation.Method.ReturnType);
                 }
             }
-            catch (Exception ex)
+        }
+
+        private static void HandleNonGenericIteratorInvocation(IInvocation invocation)
+        {
+            invocation.Proceed();
+            invocation.ReturnValue = ProxyNonGenericIterator(
+                invocation.InvocationTarget,
+                invocation.ReturnValue as IEnumerable);
+        }
+
+        private static void HandleGenericIteratorInvocation(IInvocation invocation, CastType cast)
+        {
+            invocation.Proceed();
+
+            var genericType = invocation.Method.ReturnType.GetGenericArguments()[0];
+
+            var method = ProxyGenericIteratorMethod.MakeGenericMethod(genericType);
+
+            var result = method.Invoke(null, new[] {invocation.InvocationTarget, invocation.ReturnValue, cast});
+
+            invocation.ReturnValue = result;
+        }
+
+        private static IEnumerable<T> ProxyGenericIterator<T>(
+            object target, IEnumerable enumerable, CastType cast)
+        {
+            var proxied = ProxyNonGenericIterator(target, enumerable).Cast<T>();
+
+            switch(cast)
             {
-                invocation.ReturnValue = null;
+                case CastType.List:
+                    return proxied.ToList();                
+                                
+                default:
+                    return proxied;
             }
         }
+
+        private static IEnumerable ProxyNonGenericIterator(object target, IEnumerable enumerable)
+        {
+            if (enumerable == null)
+            {
+                yield return ProxyExtensions.NeverNullProxy(target.GetType());
+                yield break;
+            }
+
+            foreach (var element in enumerable)
+            {
+                yield return ProxyExtensions.NeverNull(element, target.GetType());
+            }
+        }
+
     }
 
     #endregion
@@ -118,11 +215,24 @@ namespace NoNulls
 
     public static class ProxyExtensions
     {
-        private static ProxyGenerator _generator = new ProxyGenerator();
+        
+        private static ProxyGenerator _generator = new ProxyGenerator();        
+
+        public static object NeverNullInterfaceProxy(Type t)
+        {
+            return _generator.CreateInterfaceProxyWithoutTarget(t, new[] { typeof(IUnBoxProxy) }, new NeverNullInterceptor(null));
+        }
+
+        public static object NeverNullInterface(object source, Type t)
+        {
+            return _generator.CreateInterfaceProxyWithTarget(t, new[] { typeof(IUnBoxProxy) }, source,  new NeverNullInterceptor(null));
+        }
 
         public static object NeverNullProxy(Type t)
-        {
-            return _generator.CreateClassProxy(t, new[] { typeof(IUnBoxProxy) }, new NeverNullInterceptor(null));
+        {            
+            return _generator.CreateClassProxy(t, 
+                                                new[] { typeof(IUnBoxProxy) }, 
+                                                new NeverNullInterceptor(null));
         }
 
         public static object NeverNull(object source, Type type)
@@ -134,7 +244,7 @@ namespace NoNulls
         public static T NeverNull<T>(this T source) where T : class
         {
             return
-                (T)
+                (T) 
                 _generator.CreateClassProxyWithTarget(typeof(T), new[] { typeof(IUnBoxProxy) }, source,
                                                       new NeverNullInterceptor(source));
         }

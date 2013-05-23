@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
@@ -9,6 +10,60 @@ namespace NoNulls
     internal class Tests
     {
         [Test]
+        public void NoNull()
+        {
+            var user = new User().NeverNull();
+
+            var name = user.School.District.Street.Final();
+
+            Assert.That(name, Is.Null);
+        }
+
+        [Test]
+        public void TestEnumerable()
+        {
+            var user = new User().NeverNull();
+
+            var x = user.ClassMatesEnumerable.First().Final();            
+        }
+
+        [Test]
+        public void TestList()
+        {
+            var user = new User().NeverNull();
+
+            var x = user.ClassMatesList.First().Final();
+        }
+        [Test]
+        public void TestDict()
+        {
+            var user = new User().NeverNull();
+
+
+            var dict = new Dictionary<User, User>().NeverNull() as IEnumerable<KeyValuePair<User, User>>;
+
+            var z = dict.NeverNull().First().Final();
+
+            var x = user.ClassMatesDict.First();
+        }
+
+        [Test]
+        public void TestHash()
+        {
+            var user = new User().NeverNull();
+
+            var x = user.ClassMatesHash.First().Final();
+        }
+        public IEnumerable Get()
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                yield return new User();
+            }    
+        }
+
+        [Test]
+        [Ignore]
         public void NeverNullTest()
         {
             var actions = new List<Func<int, string>>
@@ -17,6 +72,11 @@ namespace NoNulls
                                   {
                                       NonNullNoProxyButNewObjects(i);
                                       return "NonNullWithoutProxyNewingObjects";
+                                  },
+                              i =>
+                                  {
+                                      NullWithProxy(i);
+                                      return "NullWithProxy";
                                   },
                               i =>
                                   {
