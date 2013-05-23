@@ -6,9 +6,11 @@ using System.Text;
 using MoreLinq;
 
 namespace DecisionTree.Data
-{
-    [Serializable]
+{    
     [DataContract]
+    [KnownType(typeof(Feature))]
+    [KnownType(typeof(Output))]
+    [KnownType(typeof(Tree))]
     public class Tree
     {
         [DataMember]

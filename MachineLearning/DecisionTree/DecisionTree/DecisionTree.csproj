@@ -55,6 +55,7 @@
     <Compile Include="Data\Tree.cs" />
     <Compile Include="Decider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\Extensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

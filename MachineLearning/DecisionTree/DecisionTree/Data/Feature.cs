@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace DecisionTree.Data
 {
-    [Serializable]
+    [DataContract]
     public class Feature
     {
+        [DataMember]
         public string Value { get; set; }
+
+        [DataMember]
         public string Axis { get; set; }
 
         public Feature(string value, string axis)

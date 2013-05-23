@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using DecisionTree.Data;
+using DecisionTree.Utils;
 using NUnit.Framework;
 using SampleDataParsers;
 using SampleDataParsers.Car;
@@ -105,6 +106,18 @@ namespace DecisionTree.Tests
             {
                 Assert.That(Tree.ProcessInstance(tree, instance).Value, Is.EqualTo(instance.Output.Value));
             }
+        }
+
+        [Test]
+        public void TestSerialization()
+        {
+            var data = GetDataSet().BuildTree();
+
+            var serialized = data.Serialize();
+
+            var deserializedTree = Extensions.Deserialize<Tree>(serialized);
+
+            Assert.IsTrue(deserializedTree.Branches.Count == data.Branches.Count);
         }
 
         [Test]

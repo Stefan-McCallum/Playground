@@ -41,7 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Car\Car.cs" />
-    <Compile Include="CsvRunner.cs" />
+    <Compile Include="LineReader.cs" />
     <Compile Include="IParser.cs" />
     <Compile Include="Lenses\Lenses.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
