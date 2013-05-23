@@ -8,7 +8,7 @@ using SampleDataParsers.Lenses;
 
 namespace SampleDataParsers.Car
 {
-    public class Car : CsvRunner
+    public class Car : LineReader
     {
         protected override Instance ParseLine(string line)
         {

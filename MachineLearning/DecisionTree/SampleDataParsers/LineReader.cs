@@ -7,7 +7,7 @@ using DecisionTree.Data;
 
 namespace SampleDataParsers
 {
-    public abstract class CsvRunner : IParser
+    public abstract class LineReader : IParser
     {
         public DecisionTreeSet Parse(string file)
         {

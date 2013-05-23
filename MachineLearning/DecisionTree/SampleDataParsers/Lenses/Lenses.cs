@@ -37,7 +37,7 @@ namespace SampleDataParsers.Lenses
         None = 3
     }
 
-    public class Lenses : CsvRunner
+    public class Lenses : LineReader
     {        
         protected override Instance ParseLine(string line)
         {
