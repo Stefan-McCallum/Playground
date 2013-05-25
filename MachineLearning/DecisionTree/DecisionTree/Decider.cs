@@ -13,6 +13,8 @@ namespace DecisionTree
         {
             var baseEntropy = Entropy(set);
 
+            //Console.WriteLine("Base entropy is {0}", baseEntropy);
+
             var bestInfoGain = 0.0;            
 
             var uniqueFeaturesByAxis = set.UniqueFeatures().GroupBy(i => i.Axis).ToList();

@@ -53,14 +53,12 @@ namespace DecisionTree.Data
 
         private Tree TreeForFeature(Feature feature)
         {
-            var branch = Branches.FirstOrDefault(i => i.Key.Axis == feature.Axis && i.Key.Value == feature.Value);
-
-            if (branch.Equals(default(KeyValuePair<Feature, Tree>)))
+            Tree found;
+            if (Branches.TryGetValue(feature, out found))
             {
-                return null;
+                return found;
             }
-
-            return branch.Value;
+            return null;
         }
 
         private Tree TreeForInstance(Instance instance)
