@@ -13,7 +13,7 @@ namespace DecisionTree.Data
 
         public Instance Split(string axis, string value)
         {
-            var featureSplit = Features.Where(f => !(f.Axis == axis && f.Value == value)).ToList();
+            var featureSplit = Features.Where(f => !f.IsFeature(axis, value)).ToList();
 
             // no split happened
             if (featureSplit.Count == Features.Count)

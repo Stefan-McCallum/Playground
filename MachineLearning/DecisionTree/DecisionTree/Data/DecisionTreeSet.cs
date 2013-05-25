@@ -109,16 +109,23 @@ namespace DecisionTree.Data
         {
             // each feature is the last item
             var branches = new Dictionary<Feature, Tree>();
+                        
             foreach (var instance in Instances)
             {
                 foreach (var feature in instance.Features)
                 {
+                    if (branches.Any(k => k.Key.Value == feature.Value))
+                    {
+                        continue;
+                    }
+
                     branches[feature] = new Tree
                     {
                         Leaf = instance.Output
                     };
                 }
             }
+            
             return new Tree
             {
                 Branches = branches
@@ -153,3 +160,5 @@ namespace DecisionTree.Data
         } 
     }
 }
+
+

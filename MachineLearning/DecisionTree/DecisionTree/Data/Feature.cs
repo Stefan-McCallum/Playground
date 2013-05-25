@@ -21,6 +21,11 @@ namespace DecisionTree.Data
             Axis = axis;
         }
 
+        public Boolean IsFeature(string axis, string value)
+        {
+            return Value == value && Axis == axis;
+        }
+
         public override string ToString()
         {
             return String.Format("{0}: {1}", Axis, Value);
