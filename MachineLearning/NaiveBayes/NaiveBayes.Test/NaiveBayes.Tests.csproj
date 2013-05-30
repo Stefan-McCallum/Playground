@@ -50,7 +50,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Fogbugz\Parser.cs" />
+    <Compile Include="Fogbugz\XmlUtil.cs" />
     <Compile Include="StackExchangeReader.cs" />
+    <Compile Include="TestFogbugz.cs" />
     <Compile Include="Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
