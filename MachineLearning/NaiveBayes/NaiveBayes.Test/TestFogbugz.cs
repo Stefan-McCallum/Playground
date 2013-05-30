@@ -117,8 +117,12 @@ namespace NaiveBayes.Test
 
             Func<Case, Document> caseTransform =
                 i =>
-                i.ToDoc(@case => @case.Priority,
+                i.ToDoc(@case => @case.Area,
                         @case => @case.Title);
+
+            #region Event Text comment 
+            //@case.Events.Aggregate("", (acc, bug) => acc + " " + Regex.Replace(bug.Text, Regex.Escape("[") + "code" + Regex.Escape("]") + ".*" + Regex.Escape("[") + "/code" + Regex.Escape("]"), "")));
+            #endregion
 
             var total = cases.Count();
 

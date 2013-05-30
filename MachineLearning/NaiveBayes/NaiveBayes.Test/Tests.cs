@@ -82,6 +82,9 @@ namespace NaiveBayes.Test
             var successOfStack = verifier(stackOverflowTest);
             var successOfProgrammers = verifier(programmersTest);
 
+            Console.WriteLine("Stack: {0:0.00}", successOfStack);
+            Console.WriteLine("Prog: {0:0.00}", successOfProgrammers);
+
         }
 
         private List<Document> SourceDocuments

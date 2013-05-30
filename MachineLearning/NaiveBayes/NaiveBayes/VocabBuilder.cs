@@ -24,6 +24,7 @@ namespace NaiveBayes
                 .Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries).ToList();
 
         private static List<string> _punctuation = new List<string>{"!", ".", ",", ";", "\"", "/", "'", ":", "-", "_", "+", "?", "[", "]", "=", "(", ")", ">", "<"}; 
+
         private static String StripPunctuation(string input)
         {
             return _punctuation.Aggregate(input, (acc, item) => acc.Replace(item, ""));
@@ -40,6 +41,8 @@ namespace NaiveBayes
 
             word = RemoveNumbers(word);
 
+            word = word.ToLowerInvariant().Trim();
+
             if (String.IsNullOrWhiteSpace(word))
             {
                 return null;
@@ -49,10 +52,10 @@ namespace NaiveBayes
             {
                 return null;
             }
-
-            if (_stopWords.BinarySearch(word) < 0)
+            
+            if (!_stopWords.Contains(word))
             {
-                return word.ToLowerInvariant();
+                return word;
             }
 
             return null;
