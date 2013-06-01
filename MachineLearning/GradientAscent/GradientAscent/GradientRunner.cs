@@ -28,16 +28,18 @@ namespace GradientAscent
                 #region Sigmoid Explanation
 
                 /*
-                   multiply all the data by the weights, this gives you the estimation of the current function
-                   given the weights. multiplying by the sigmoid moves a point into one class vs the other
-                   if its larger than 0.5 it'll be in class 1, if its smaller than it'll be in class 0.
-                   it doesn't matter if the instance is the class the sigmoid says it is,
-                   the error will shift the weights gradient so over the iterations of the cycles 
-                   the weights will move the final data point towards its actual expected class
-                
-                   for example, if there is a data point with values    
-                
-                   [1.0, -0.017612, 14.053064]
+                 * multiply all the data by the weights, this gives you the estimation of the current function
+                 * given the weights. multiplying by the sigmoid moves a point into one class vs the other
+                 * if its larger than 0.5 it'll be in class 1, if its smaller than it'll be in class 0.  The closer it is
+                 * to 1 means that with the given weights that value is highly probably to be in class 1.
+                 * 
+                 * it doesn't matter if the instance is the class the sigmoid says it is,
+                 * the error will shift the weights gradient so over the iterations of the cycles 
+                 * the weights will move the final data point towards its actual expected class
+                 * 
+                 * for example, if there is a data point with values    
+                 * 
+                 * [1.0, -0.017612, 14.053064]
                  * 
                  * where value 1 is the initial weight factor, and values 2 and 3 are the x y coordinates
                  *  
